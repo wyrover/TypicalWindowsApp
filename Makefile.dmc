@@ -1,0 +1,44 @@
+# Makefile for Digital Mars C/C++ Compiler
+# Usage: make -f Makefile.dmc
+
+DOTEXE = .exe
+DOTOBJ = .obj
+
+DEF1 = -o -DNDEBUG=1
+#DEF1 = -D -g -D_DEBUG=1
+
+DEF2 = -DMBCS -D_MBCS
+#DEF2 = -DUNICODE -D_UNICODE
+#DEF2 = -DANSI -D_ANSI
+
+CXX = dmc
+CXXFLAGS = -Ae -mn -WA -L/SU:windows -L/exet:nt/su:windows:4.0 -cpp $(DEF1) $(DEF2)
+
+RC = rcc
+RCFLAGS = -32
+
+OBJS = TypicalWindowsApp$(DOTOBJ) TypicalWindowsApp.res
+LIBS = gdi32.lib shell32.lib
+
+all: TypicalWindowsApp$(DOTEXE)
+
+TypicalWindowsApp$(DOTEXE): $(OBJS)
+	$(CXX) $(CXXFLAGS) -eTypicalWindowsApp$(DOTEXE) $(OBJS) $(LIBS)
+
+TypicalWindowsApp$(DOTOBJ): stdafx.h resource.h TypicalWindowsApp.h TypicalWindowsApp.cpp
+	$(CXX) $(CXXFLAGS) -c TypicalWindowsApp.cpp
+
+TypicalWindowsApp.res: resource.h TypicalWindowsApp.rc
+	$(RC) $(RCFLAGS) TypicalWindowsApp.rc
+
+clean:
+	if exist *.o del *.o
+	if exist *.obj del *.obj
+	if exist *.res del *.res
+	if exist *.tds del *.tds
+	if exist *.map del *.map
+	if exist *.sdf del *.sdf
+	if exist *.suo del /A:H *.suo
+	if exist *.opensdf del *.opensdf
+	if exist *.user del *.user
+	if exist *.filters del *.filters

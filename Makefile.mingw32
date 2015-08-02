@@ -1,0 +1,45 @@
+# Makefile for 32-bit MinGW g++
+# Usage: make -f Makefile.mingw32
+
+DOTEXE = .exe
+DOTOBJ = .o
+
+DEF1 = -O3 -DNDEBUG
+#DEF1 = -g -ggdb -D_DEBUG
+
+DEF2 = -DMBCS -D_MBCS
+#DEF2 = -municode -DUNICODE -D_UNICODE
+#DEF2 = -DANSI -D_ANSI
+
+CXX = g++
+CXXFLAGS = -static -m32 -std=c++11 -pedantic -Wall $(DEF1) $(DEF2)
+
+RC = windres
+
+RCFLAGS = -F pe-i386            # x86
+#RCFLAGS = -F pe-x86-64         # x64
+
+OBJS = TypicalWindowsApp$(DOTOBJ) TypicalWindowsApp_res$(DOTOBJ)
+
+all: TypicalWindowsApp$(DOTEXE)
+
+TypicalWindowsApp$(DOTEXE): $(OBJS)
+	$(CXX) -mwindows $(CXXFLAGS) -o TypicalWindowsApp$(DOTEXE) $(OBJS)
+
+TypicalWindowsApp$(DOTOBJ): stdafx.h resource.h TypicalWindowsApp.h TypicalWindowsApp.cpp
+	$(CXX) $(CXXFLAGS) -c TypicalWindowsApp.cpp
+
+TypicalWindowsApp_res$(DOTOBJ): resource.h TypicalWindowsApp.rc
+	$(RC) $(RCFLAGS) -i TypicalWindowsApp.rc -o TypicalWindowsApp_res$(DOTOBJ)
+
+clean:
+	rm -f *.o
+	rm -f *.obj
+	rm -f *.res
+	rm -f *.tds
+	rm -f *.map
+	rm -f *.sdf
+	rm -f *.suo
+	rm -f *.opensdf
+	rm -f *.user
+	rm -f *.filters
