@@ -1,22 +1,30 @@
 #include "stdafx.h"
 
+// the program name
+#define PROGNAME    "TypicalWindowsApp"
+
 // maximum length of resource string plus one
 static const INT    s_nMaxLoadString = 512;
 
 // the class name of the main window
-static const TCHAR  s_szClassName[] = TEXT("TypicalWindowsApp");
+static const TCHAR  s_szClassName[] = TEXT(PROGNAME);
 
 // the application
 struct WinApp {
-    HINSTANCE   m_hInst;
-    HWND        m_hWnd;
-    HICON       m_hIcon;
-    HACCEL      m_hAccel;
+    INT         m_argc;         // number of command line parameters
+    TCHAR **    m_targv;        // command line parameters
+
+    HINSTANCE   m_hInst;        // the instance handle
+    HWND        m_hWnd;         // the main window handle
+    HICON       m_hIcon;        // the icon handle
+    HACCEL      m_hAccel;       // the accelerator handle
 
     // constructor
-    WinApp(HINSTANCE hInst) {
+    WinApp(HINSTANCE hInst, int argc, TCHAR **targv) {
         ZeroMemory(this, sizeof(*this));
         m_hInst = hInst;
+        m_argc = argc;
+        m_targv = targv;
     }
 
     // not thread-safe!
@@ -59,8 +67,8 @@ struct WinApp {
         ::UpdateWindow(m_hWnd);
 
         // process command line
-        for (INT i = 1; i < __argc; ++i) {
-            ::MessageBox(m_hWnd, __targv[i], TEXT("File"), MB_ICONINFORMATION);
+        for (INT i = 1; i < m_argc; ++i) {
+            ::MessageBox(m_hWnd, m_targv[i], TEXT("File"), MB_ICONINFORMATION);
         }
         return true;
     } // startup
@@ -243,7 +251,7 @@ INT APIENTRY _tWinMain(
     LPTSTR      lpCmdLine,
     INT         nCmdShow)
 {
-    WinApp app(hInstance);
+    WinApp app(hInstance, __argc, __targv);
 
     if (!app.registerClasses()) {
         MessageBoxA(NULL, "ERROR: RegisterClass failed", NULL,
