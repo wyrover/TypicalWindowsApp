@@ -273,5 +273,10 @@ INT APIENTRY _tWinMain(
         ret = -1;
     }
 
+#ifdef _MSC_VER
+    // for detecting memory leak (MSVC only)
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
     return ret;
 } // _tWinMain
