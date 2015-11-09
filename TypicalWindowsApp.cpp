@@ -251,26 +251,28 @@ INT APIENTRY _tWinMain(
     LPTSTR      lpCmdLine,
     INT         nCmdShow)
 {
-    WinApp app(hInstance, __argc, __targv);
-
-    if (!app.registerClasses()) {
-        MessageBoxA(NULL, "ERROR: RegisterClass failed", NULL,
-            MB_ICONERROR);
-        return 1;
-    }
-
     int ret;
 
-    try {
-        if (!app.startup(nCmdShow)) {
-            ret = 2;
-        } else {
-            ret = app.run();
+    {
+        try {
+            WinApp app(hInstance, __argc, __targv);
+
+            if (app.registerClasses()) {
+                if (app.startup(nCmdShow)) {
+                    ret = app.run();
+                } else {
+                    ret = 2;
+                }
+            } else {
+                MessageBoxA(NULL, "ERROR: RegisterClass failed", NULL,
+                    MB_ICONERROR);
+                ret = 1;
+            }
+        } catch (const std::bad_alloc&) {
+            MessageBoxA(NULL, "ERROR: Out of memory", NULL,
+                MB_ICONERROR);
+            ret = -1;
         }
-    } catch (const std::bad_alloc&) {
-        MessageBoxA(NULL, "ERROR: Out of memory", NULL,
-            MB_ICONERROR);
-        ret = -1;
     }
 
 #ifdef _MSC_VER
